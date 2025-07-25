@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>技术博客 - 测试页面</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        #status {
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .warning { background-color: #fff3cd; color: #856404; }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>博客系统测试页面</h1>
+        
+        <div id="status" class="warning">正在加载测试...</div>
+        
+        <div class="test-section">
+            <h3>1. 基本功能测试</h3>
+            <button onclick="testBasicFunctions()">测试基本功能</button>
+            <div id="basic-test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>2. Markdown渲染测试</h3>
+            <button onclick="testMarkdown()">测试Markdown渲染</button>
+            <div id="markdown-test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>3. 代码高亮测试</h3>
+            <button onclick="testCodeHighlight()">测试代码高亮</button>
+            <div id="highlight-test-result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>4. 完整博客页面</h3>
+            <button onclick="loadFullBlog()">加载完整博客</button>
+            <div id="full-blog-container"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    
+    <script>
+        function updateStatus(message, type = 'warning') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = type;
+        }
+        
+        function testBasicFunctions() {
+            const resultEl = document.getElementById('basic-test-result');
+            let results = [];
+            
+            // 测试JavaScript基本功能
+            try {
+                const testArray = [1, 2, 3];
+                const doubled = testArray.map(x => x * 2);
+                results.push(`✓ JavaScript基本功能正常: [${doubled.join(', ')}]`);
+            } catch (e) {
+                results.push(`✗ JavaScript基本功能失败: ${e.message}`);
+            }
+            
+            // 测试DOM操作
+            try {
+                const testDiv = document.createElement('div');
+                testDiv.innerHTML = '<p>测试内容</p>';
+                results.push(`✓ DOM操作正常: ${testDiv.innerHTML}`);
+            } catch (e) {
+                results.push(`✗ DOM操作失败: ${e.message}`);
+            }
+            
+            resultEl.innerHTML = '<pre>' + results.join('\n') + '</pre>';
+        }
+        
+        function testMarkdown() {
+            const resultEl = document.getElementById('markdown-test-result');
+            
+            if (typeof marked === 'undefined') {
+                resultEl.innerHTML = '<p style="color: red;">✗ marked库未加载</p>';
+                return;
+            }
+            
+            const testMarkdown = `# 测试标题\n\n这是一个**粗体**文本和一个*斜体*文本。\n\n- 列表项1\n- 列表项2\n\n\`\`\`javascript\nconst test = 'Hello World';\nconsole.log(test);\n\`\`\``;
+            
+            try {
+                const html = marked.parse(testMarkdown);
+                resultEl.innerHTML = '<p style="color: green;">✓ Markdown渲染成功</p>' + html;
+            } catch (e) {
+                resultEl.innerHTML = `<p style="color: red;">✗ Markdown渲染失败: ${e.message}</p>`;
+            }
+        }
+        
+        function testCodeHighlight() {
+            const resultEl = document.getElementById('highlight-test-result');
+            
+            if (typeof hljs === 'undefined') {
+                resultEl.innerHTML = '<p style="color: red;">✗ highlight.js库未加载</p>';
+                return;
+            }
+            
+            const testCode = `function hello() {
+    console.log('Hello, World!');
+    return 'success';
+}`;
+            
+            try {
+                const highlighted = hljs.highlight(testCode, { language: 'javascript' }).value;
+                resultEl.innerHTML = '<p style="color: green;">✓ 代码高亮成功</p><pre><code>' + highlighted + '</code></pre>';
+            } catch (e) {
+                resultEl.innerHTML = `<p style="color: red;">✗ 代码高亮失败: ${e.message}</p>`;
+            }
+        }
+        
+        function loadFullBlog() {
+            const container = document.getElementById('full-blog-container');
+            container.innerHTML = '<iframe src="index.html" width="100%" height="600px" style="border: 1px solid #ddd; border-radius: 4px;"></iframe>';
+        }
+        
+        // 页面加载完成后的初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatus('页面加载完成，可以开始测试', 'success');
+            
+            // 自动检测库是否加载
+            setTimeout(function() {
+                let status = '库加载状态: ';
+                const checks = [];
+                
+                if (typeof marked !== 'undefined') {
+                    checks.push('marked ✓');
+                } else {
+                    checks.push('marked ✗');
+                }
+                
+                if (typeof hljs !== 'undefined') {
+                    checks.push('highlight.js ✓');
+                } else {
+                    checks.push('highlight.js ✗');
+                }
+                
+                updateStatus(status + checks.join(', '), 'success');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

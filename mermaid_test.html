@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mermaid 流程图测试</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1e293b;
+            border-bottom: 2px solid #3b82f6;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f8fafc;
+        }
+        .test-title {
+            color: #3b82f6;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .markdown-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        pre {
+            background: #1e293b;
+            color: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: 'Monaco', 'Cascadia Code', 'Consolas', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Mermaid 流程图渲染测试</h1>
+        
+        <div class="test-section">
+            <div class="test-title">测试1: 基本流程图</div>
+            <div class="markdown-content">
+                <p>这是一个基本的流程图示例：</p>
+                <pre><code class="language-mermaid">
+flowchart TD
+    A[开始] --> B{条件判断}
+    B -->|是| C[执行操作A]
+    B -->|否| D[执行操作B]
+    C --> E[结束]
+    D --> E
+                </code></pre>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">测试2: 序列图</div>
+            <div class="markdown-content">
+                <p>用户登录序列图：</p>
+                <pre><code class="language-mermaid">
+sequenceDiagram
+    participant 用户
+    participant 前端
+    participant 后端
+    participant 数据库
+    
+    用户->>前端: 输入用户名密码
+    前端->>后端: 发送登录请求
+    后端->>数据库: 验证用户信息
+    数据库-->>后端: 返回验证结果
+    后端-->>前端: 返回JWT Token
+    前端-->>用户: 登录成功
+                </code></pre>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">测试3: 甘特图</div>
+            <div class="markdown-content">
+                <p>项目开发时间线：</p>
+                <pre><code class="language-mermaid">
+gantt
+    title 博客系统开发计划
+    dateFormat  YYYY-MM-DD
+    section 后端开发
+    API设计      :a1, 2024-01-01, 30d
+    数据库设计   :after a1, 20d
+    认证系统     :2024-02-01, 25d
+    section 前端开发
+    页面设计     :2024-01-15, 45d
+    交互开发     :2024-02-15, 30d
+    集成测试     :2024-03-01, 15d
+                </code></pre>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">测试4: 状态图</div>
+            <div class="markdown-content">
+                <p>文章状态流转：</p>
+                <pre><code class="language-mermaid">
+stateDiagram-v2
+    [*] --> 草稿
+    草稿 --> 待审核: 提交审核
+    待审核 --> 已发布: 审核通过
+    待审核 --> 草稿: 审核拒绝
+    已发布 --> 已下线: 下线
+    已下线 --> 已发布: 重新发布
+    草稿 --> [*]: 删除
+    已下线 --> [*]: 删除
+                </code></pre>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <div class="test-title">测试5: 错误语法测试</div>
+            <div class="markdown-content">
+                <p>这是一个故意包含错误语法的图表：</p>
+                <pre><code class="language-mermaid">
+flowchart TD
+    A[开始] --> B{错误语法
+    B -->|是| C[操作A
+    C --> E[结束
+                </code></pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@latest/marked.min.js"></script>
+    <script>
+        // 模拟博客系统的渲染逻辑
+        
+        // 初始化Mermaid
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            },
+            sequence: {
+                useMaxWidth: true
+            },
+            gantt: {
+                useMaxWidth: true
+            }
+        });
+
+        // 渲染Mermaid图表函数
+        async function renderMermaidCharts(container) {
+            if (typeof mermaid === 'undefined') {
+                console.warn('Mermaid 库未加载');
+                return;
+            }
+            
+            try {
+                const mermaidBlocks = container.querySelectorAll('pre code.language-mermaid, code.language-mermaid');
+                
+                for (let i = 0; i < mermaidBlocks.length; i++) {
+                    const block = mermaidBlocks[i];
+                    const mermaidCode = block.textContent || block.innerText;
+                    
+                    const mermaidDiv = document.createElement('div');
+                    mermaidDiv.className = 'mermaid-chart';
+                    mermaidDiv.id = `mermaid-${Date.now()}-${i}`;
+                    
+                    const preElement = block.closest('pre') || block;
+                    preElement.parentNode.insertBefore(mermaidDiv, preElement);
+                    preElement.remove();
+                    
+                    try {
+                        const { svg } = await mermaid.render(mermaidDiv.id + '-svg', mermaidCode);
+                        mermaidDiv.innerHTML = svg;
+                        
+                        // 添加样式
+                        Object.assign(mermaidDiv.style, {
+                            textAlign: 'center',
+                            margin: '20px 0',
+                            padding: '16px',
+                            border: '1px solid #e2e8f0',
+                            borderRadius: '8px',
+                            backgroundColor: '#fff',
+                            boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
+                        });
+                        
+                        console.log(`Mermaid 图表 ${i + 1} 渲染成功`);
+                    } catch (renderError) {
+                        console.error(`Mermaid 图表渲染失败:`, renderError);
+                        mermaidDiv.innerHTML = `
+                            <div style="color: #e74c3c; padding: 12px; border: 1px solid #e74c3c; border-radius: 8px; background: #fdf2f2; text-align: left;">
+                                <strong style="display: block; margin-bottom: 4px;">流程图渲染失败</strong>
+                                <small style="opacity: 0.8;">请检查语法是否正确</small>
+                            </div>
+                        `;
+                        Object.assign(mermaidDiv.style, {
+                            margin: '20px 0',
+                            textAlign: 'center'
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('处理 Mermaid 图表时出错:', error);
+            }
+        }
+
+        // 页面加载完成后渲染图表
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('开始渲染 Mermaid 图表...');
+            await new Promise(resolve => setTimeout(resolve, 500)); // 等待库加载
+            await renderMermaidCharts(document.body);
+            console.log('Mermaid 图表渲染完成');
+        });
+    </script>
+</body>
+</html>

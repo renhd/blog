@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客管理平台 - 分类管理</title>
+    <link rel="icon" href="../icon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/categories.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- 侧边栏 -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-blog"></i>
+                    <span class="logo-text">博客管理</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-menu">
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="dashboard.html">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span class="menu-text">仪表板</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="articles.html">
+                            <i class="fas fa-file-alt"></i>
+                            <span class="menu-text">文章管理</span>
+                        </a>
+                    </li>
+                    <li class="menu-item active">
+                        <a href="categories.html">
+                            <i class="fas fa-folder"></i>
+                            <span class="menu-text">分类管理</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="settings.html">
+                            <i class="fas fa-cog"></i>
+                            <span class="menu-text">系统设置</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶部导航栏 -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="mobile-toggle" id="mobileToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title">分类管理</h1>
+                </div>
+                
+                <div class="header-right">
+                    <div class="user-menu">
+                        <div class="user-info" id="userInfo">
+                            <img src="../logo.png" alt="用户头像" class="user-avatar">
+                            <span class="user-name">管理员</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="dropdown-menu" id="userDropdown">
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i>
+                                个人信息
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                设置
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                退出登录
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 页面内容 -->
+            <main class="content">
+                <!-- 操作栏 -->
+                <div class="content-header">
+                    <div class="header-actions">
+                        <button class="btn btn-primary" id="newCategoryBtn">
+                            <i class="fas fa-plus"></i>
+                            新建分类
+                        </button>
+                        <button class="btn btn-secondary" id="refreshBtn">
+                            <i class="fas fa-sync-alt"></i>
+                            刷新
+                        </button>
+                    </div>
+                    
+                    <div class="header-filters">
+                        <div class="filter-group">
+                            <div class="search-box">
+                                <input type="text" placeholder="搜索分类..." id="searchInput">
+                                <button class="search-btn" id="searchBtn">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 分类卡片网格 -->
+                <div class="categories-grid" id="categoriesGrid">
+                    <div class="loading-card">
+                        <div class="loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span>加载中...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 空状态 -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-folder-open"></i>
+                    </div>
+                    <h3>暂无分类</h3>
+                    <p>还没有创建任何分类，点击上方按钮创建第一个分类吧</p>
+                    <button class="btn btn-primary" onclick="openCategoryModal()">
+                        <i class="fas fa-plus"></i>
+                        新建分类
+                    </button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 新建/编辑分类模态框 -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">新建分类</h3>
+                <button class="modal-close" id="modalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="category-form" id="categoryForm">
+                    <div class="form-group">
+                        <label for="categoryName">分类名称 *</label>
+                        <input type="text" id="categoryName" name="name" required placeholder="请输入分类名称">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="categoryDescription">分类描述</label>
+                        <textarea id="categoryDescription" name="description" rows="3" placeholder="请输入分类描述（可选）"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="saveBtn">
+                    <i class="fas fa-save"></i>
+                    保存
+                </button>
+                <button type="button" class="btn btn-light" id="cancelBtn">
+                    取消
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认模态框 -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h3 class="modal-title">确认删除</h3>
+                <button class="modal-close" id="deleteModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="delete-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>确定要删除分类 "<span id="deleteCategoryName"></span>" 吗？</p>
+                    <p class="warning-text">注意：删除分类后，该分类下的文章将变为未分类状态。</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                    <i class="fas fa-trash"></i>
+                    确认删除
+                </button>
+                <button type="button" class="btn btn-light" id="cancelDeleteBtn">
+                    取消
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/categories.js"></script>
+</body>
+</html>

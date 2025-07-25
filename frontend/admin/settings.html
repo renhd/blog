@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客管理平台 - 系统设置</title>
+    <link rel="icon" href="../icon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/settings.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- 侧边栏 -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-blog"></i>
+                    <span class="logo-text">博客管理</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-menu">
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="dashboard.html">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span class="menu-text">仪表板</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="articles.html">
+                            <i class="fas fa-file-alt"></i>
+                            <span class="menu-text">文章管理</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="categories.html">
+                            <i class="fas fa-folder"></i>
+                            <span class="menu-text">分类管理</span>
+                        </a>
+                    </li>
+                    <li class="menu-item active">
+                        <a href="settings.html">
+                            <i class="fas fa-cog"></i>
+                            <span class="menu-text">系统设置</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶部导航栏 -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="mobile-toggle" id="mobileToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title">系统设置</h1>
+                </div>
+                
+                <div class="header-right">
+                    <div class="user-menu">
+                        <div class="user-info" id="userInfo">
+                            <img src="../logo.png" alt="用户头像" class="user-avatar">
+                            <span class="user-name">管理员</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="dropdown-menu" id="userDropdown">
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i>
+                                个人信息
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                设置
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                退出登录
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 页面内容 -->
+            <main class="content">
+                <!-- 设置导航 -->
+                <div class="settings-nav">
+                    <div class="nav-tabs">
+                        <button class="nav-tab active" data-tab="profile">
+                            <i class="fas fa-user"></i>
+                            个人信息
+                        </button>
+                        <button class="nav-tab" data-tab="security">
+                            <i class="fas fa-shield-alt"></i>
+                            安全设置
+                        </button>
+                        <button class="nav-tab" data-tab="system">
+                            <i class="fas fa-server"></i>
+                            系统信息
+                        </button>
+                        <button class="nav-tab" data-tab="maintenance">
+                            <i class="fas fa-tools"></i>
+                            系统维护
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 设置内容 -->
+                <div class="settings-content">
+                    <!-- 个人信息 -->
+                    <div class="tab-content active" id="profile-tab">
+                        <div class="settings-card">
+                            <div class="card-header">
+                                <h3>
+                                    <i class="fas fa-user-edit"></i>
+                                    个人信息
+                                </h3>
+                                <p>管理您的个人资料和账户信息</p>
+                            </div>
+                            <div class="card-body">
+                                <form class="settings-form" id="profileForm">
+                                    <div class="form-section">
+                                        <h4>基本信息</h4>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="username">用户名</label>
+                                                <input type="text" id="username" name="username" readonly>
+                                                <small>用户名不可修改</small>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="nickname">昵称</label>
+                                                <input type="text" id="nickname" name="nickname" placeholder="请输入昵称">
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group">
+                                                <label for="email">邮箱</label>
+                                                <input type="email" id="email" name="email" placeholder="请输入邮箱地址">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="role">角色</label>
+                                                <input type="text" id="role" name="role" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-section">
+                                        <h4>头像设置</h4>
+                                        <div class="avatar-section">
+                                            <div class="current-avatar">
+                                                <img id="currentAvatar" src="https://via.placeholder.com/100" alt="当前头像">
+                                            </div>
+                                            <div class="avatar-controls">
+                                                <input type="file" id="avatarFile" accept="image/*" style="display: none;">
+                                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('avatarFile').click()">
+                                                    <i class="fas fa-upload"></i>
+                                                    上传头像
+                                                </button>
+                                                <p class="avatar-tip">支持 JPG、PNG 格式，建议尺寸 200x200 像素</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save"></i>
+                                            保存更改
+                                        </button>
+                                        <button type="button" class="btn btn-light" id="resetProfileBtn">
+                                            <i class="fas fa-undo"></i>
+                                            重置
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 安全设置 -->
+                    <div class="tab-content" id="security-tab">
+                        <div class="settings-card">
+                            <div class="card-header">
+                                <h3>
+                                    <i class="fas fa-key"></i>
+                                    修改密码
+                                </h3>
+                                <p>定期更换密码以确保账户安全</p>
+                            </div>
+                            <div class="card-body">
+                                <form class="settings-form" id="passwordForm">
+                                    <div class="form-section">
+                                        <div class="form-group">
+                                            <label for="oldPassword">当前密码</label>
+                                            <div class="password-input">
+                                                <input type="password" id="oldPassword" name="oldPassword" placeholder="请输入当前密码" required>
+                                                <button type="button" class="toggle-password" onclick="togglePasswordVisibility('oldPassword')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="newPassword">新密码</label>
+                                            <div class="password-input">
+                                                <input type="password" id="newPassword" name="newPassword" placeholder="请输入新密码" required>
+                                                <button type="button" class="toggle-password" onclick="togglePasswordVisibility('newPassword')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                            <div class="password-strength" id="passwordStrength">
+                                                <div class="strength-meter">
+                                                    <div class="strength-bar"></div>
+                                                </div>
+                                                <span class="strength-text">密码强度: 弱</span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="confirmPassword">确认新密码</label>
+                                            <div class="password-input">
+                                                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="请再次输入新密码" required>
+                                                <button type="button" class="toggle-password" onclick="togglePasswordVisibility('confirmPassword')">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="password-requirements">
+                                        <h5>密码要求：</h5>
+                                        <ul>
+                                            <li id="length-req">至少8个字符</li>
+                                            <li id="uppercase-req">包含大写字母</li>
+                                            <li id="lowercase-req">包含小写字母</li>
+                                            <li id="number-req">包含数字</li>
+                                            <li id="special-req">包含特殊字符</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-key"></i>
+                                            修改密码
+                                        </button>
+                                        <button type="button" class="btn btn-light" id="resetPasswordBtn">
+                                            <i class="fas fa-undo"></i>
+                                            重置
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <div class="card-header">
+                                <h3>
+                                    <i class="fas fa-history"></i>
+                                    登录历史
+                                </h3>
+                                <p>查看最近的登录记录</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="login-history" id="loginHistory">
+                                    <div class="history-item">
+                                        <div class="history-icon">
+                                            <i class="fas fa-desktop"></i>
+                                        </div>
+                                        <div class="history-info">
+                                            <div class="history-device">桌面设备 - Chrome 浏览器</div>
+                                            <div class="history-time">2024-12-15 14:30:25</div>
+                                            <div class="history-ip">IP: 192.168.1.100</div>
+                                        </div>
+                                        <div class="history-status current">
+                                            <span class="status-badge">当前会话</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 系统信息 -->
+                    <div class="tab-content" id="system-tab">
+                        <div class="settings-card">
+                            <div class="card-header">
+                                <h3>
+                                    <i class="fas fa-info-circle"></i>
+                                    系统信息
+                                </h3>
+                                <p>查看系统运行状态和配置信息</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="system-info-grid">
+                                    <div class="info-card">
+                                        <div class="info-icon">
+                                            <i class="fas fa-server"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <h4>系统版本</h4>
+                                            <p id="systemVersion">Blog System v1.0</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info-card">
+                                        <div class="info-icon">
+                                            <i class="fab fa-java"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <h4>Java 版本</h4>
+                                            <p id="javaVersion">-</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info-card">
+                                        <div class="info-icon">
+                                            <i class="fas fa-database"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <h4>数据库</h4>
+                                            <p id="databaseInfo">MySQL 8.0</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info-card">
+                                        <div class="info-icon">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <h4>运行时间</h4>
+                                            <p id="systemUptime">-</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info-card">
+                                        <div class="info-icon">
+                                            <i class="fas fa-memory"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <h4>内存使用</h4>
+                                            <p id="memoryUsage">-</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="info-card">
+                                        <div class="info-icon">
+                                            <i class="fas fa-hdd"></i>
+                                        </div>
+                                        <div class="info-content">
+                                            <h4>存储空间</h4>
+                                            <p id="storageInfo">-</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 系统维护 -->
+                    <div class="tab-content" id="maintenance-tab">
+                        <div class="settings-card">
+                            <div class="card-header">
+                                <h3>
+                                    <i class="fas fa-database"></i>
+                                    数据管理
+                                </h3>
+                                <p>管理系统数据和缓存</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="maintenance-actions">
+                                    <div class="action-item">
+                                        <div class="action-info">
+                                            <h4>清理缓存</h4>
+                                            <p>清除系统缓存以释放内存空间</p>
+                                        </div>
+                                        <button class="btn btn-secondary" id="clearCacheBtn">
+                                            <i class="fas fa-broom"></i>
+                                            清理缓存
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="action-item">
+                                        <div class="action-info">
+                                            <h4>数据备份</h4>
+                                            <p>备份数据库数据以防数据丢失</p>
+                                        </div>
+                                        <button class="btn btn-primary" id="backupDataBtn">
+                                            <i class="fas fa-download"></i>
+                                            备份数据
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="action-item">
+                                        <div class="action-info">
+                                            <h4>日志查看</h4>
+                                            <p>查看系统运行日志和错误信息</p>
+                                        </div>
+                                        <button class="btn btn-info" id="viewLogsBtn">
+                                            <i class="fas fa-file-alt"></i>
+                                            查看日志
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-card">
+                            <div class="card-header">
+                                <h3>
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    危险操作
+                                </h3>
+                                <p>谨慎操作，这些操作可能影响系统正常运行</p>
+                            </div>
+                            <div class="card-body">
+                                <div class="danger-zone">
+                                    <div class="danger-item">
+                                        <div class="danger-info">
+                                            <h4>重置系统设置</h4>
+                                            <p>将所有系统设置恢复到默认值</p>
+                                        </div>
+                                        <button class="btn btn-warning" id="resetSettingsBtn">
+                                            <i class="fas fa-undo-alt"></i>
+                                            重置设置
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="danger-item">
+                                        <div class="danger-info">
+                                            <h4>清空所有数据</h4>
+                                            <p>删除所有文章、分类和用户数据</p>
+                                        </div>
+                                        <button class="btn btn-danger" id="clearAllDataBtn">
+                                            <i class="fas fa-trash-alt"></i>
+                                            清空数据
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 日志查看模态框 -->
+    <div class="modal" id="logsModal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3 class="modal-title">系统日志</h3>
+                <button class="modal-close" id="logsModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="logs-toolbar">
+                    <select class="log-level-filter" id="logLevelFilter">
+                        <option value="">全部级别</option>
+                        <option value="ERROR">错误</option>
+                        <option value="WARN">警告</option>
+                        <option value="INFO">信息</option>
+                        <option value="DEBUG">调试</option>
+                    </select>
+                    <button class="btn btn-secondary" id="refreshLogsBtn">
+                        <i class="fas fa-sync-alt"></i>
+                        刷新
+                    </button>
+                </div>
+                <div class="logs-container" id="logsContainer">
+                    <div class="log-entry">
+                        <span class="log-time">2024-12-15 14:30:25</span>
+                        <span class="log-level info">INFO</span>
+                        <span class="log-message">系统启动完成</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">2024-12-15 14:25:10</span>
+                        <span class="log-level warn">WARN</span>
+                        <span class="log-message">内存使用率较高: 85%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/settings.js"></script>
+</body>
+</html>

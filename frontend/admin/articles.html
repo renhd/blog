@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客管理平台 - 文章管理</title>
+    <link rel="icon" href="../icon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/articles.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- 侧边栏 -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-blog"></i>
+                    <span class="logo-text">博客管理</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-menu">
+                <ul class="menu-list">
+                    <li class="menu-item">
+                        <a href="dashboard.html">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span class="menu-text">仪表板</span>
+                        </a>
+                    </li>
+                    <li class="menu-item active">
+                        <a href="articles.html">
+                            <i class="fas fa-file-alt"></i>
+                            <span class="menu-text">文章管理</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="categories.html">
+                            <i class="fas fa-folder"></i>
+                            <span class="menu-text">分类管理</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="settings.html">
+                            <i class="fas fa-cog"></i>
+                            <span class="menu-text">系统设置</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶部导航栏 -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="mobile-toggle" id="mobileToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title">文章管理</h1>
+                </div>
+                
+                <div class="header-right">
+                    <div class="user-menu">
+                        <div class="user-info" id="userInfo">
+                            <img src="../logo.png" alt="用户头像" class="user-avatar">
+                            <span class="user-name">管理员</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="dropdown-menu" id="userDropdown">
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i>
+                                个人信息
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                设置
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                退出登录
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 页面内容 -->
+            <main class="content">
+                <!-- 操作栏 -->
+                <div class="content-header">
+                    <div class="header-actions">
+                        <button class="btn btn-primary" id="newArticleBtn">
+                            <i class="fas fa-plus"></i>
+                            新建文章
+                        </button>
+                        <button class="btn btn-secondary" id="refreshBtn">
+                            <i class="fas fa-sync-alt"></i>
+                            刷新
+                        </button>
+                    </div>
+                    
+                    <div class="header-filters">
+                        <div class="filter-group">
+                            <select class="filter-select" id="statusFilter">
+                                <option value="">全部状态</option>
+                                <option value="1">已发布</option>
+                                <option value="0">草稿</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <select class="filter-select" id="categoryFilter">
+                                <option value="">全部分类</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <div class="search-box">
+                                <input type="text" placeholder="搜索文章..." id="searchInput">
+                                <button class="search-btn" id="searchBtn">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 文章列表 -->
+                <div class="articles-container">
+                    <div class="articles-table">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" id="selectAll">
+                                    </th>
+                                    <th>标题</th>
+                                    <th>分类</th>
+                                    <th>状态</th>
+                                    <th>浏览量</th>
+                                    <th>创建时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="articlesTableBody">
+                                <tr class="loading-row">
+                                    <td colspan="7">
+                                        <div class="loading">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                            <span>加载中...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 分页 -->
+                    <div class="pagination-container">
+                        <div class="pagination-info">
+                            显示 <span id="pageInfo">0-0</span> 条，共 <span id="totalCount">0</span> 条
+                        </div>
+                        <div class="pagination" id="pagination">
+                            <!-- 分页按钮将动态生成 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 批量操作栏 -->
+                <div class="bulk-actions" id="bulkActions" style="display: none;">
+                    <div class="bulk-info">
+                        已选择 <span id="selectedCount">0</span> 项
+                    </div>
+                    <div class="bulk-buttons">
+                        <button class="btn btn-success" id="bulkPublishBtn">
+                            <i class="fas fa-check"></i>
+                            批量发布
+                        </button>
+                        <button class="btn btn-warning" id="bulkDraftBtn">
+                            <i class="fas fa-edit"></i>
+                            设为草稿
+                        </button>
+                        <button class="btn btn-danger" id="bulkDeleteBtn">
+                            <i class="fas fa-trash"></i>
+                            批量删除
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 新建/编辑文章模态框 -->
+    <div class="modal" id="articleModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">新建文章</h3>
+                <button class="modal-close" id="modalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="article-form" id="articleForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="articleTitle">标题 *</label>
+                            <input type="text" id="articleTitle" name="title" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="articleCategory">分类</label>
+                            <select id="articleCategory" name="category">
+                                <option value="">选择分类</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="articleTags">标签</label>
+                            <input type="text" id="articleTags" name="tags" placeholder="用逗号分隔多个标签">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="articleSummary">摘要</label>
+                            <textarea id="articleSummary" name="summary" rows="3" placeholder="文章摘要..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group full-width">
+                            <label for="articleContent">内容 *</label>
+                            <div class="editor-container">
+                                <div class="editor-toolbar">
+                                    <button type="button" class="editor-btn" data-action="bold">
+                                        <i class="fas fa-bold"></i>
+                                    </button>
+                                    <button type="button" class="editor-btn" data-action="italic">
+                                        <i class="fas fa-italic"></i>
+                                    </button>
+                                    <button type="button" class="editor-btn" data-action="link">
+                                        <i class="fas fa-link"></i>
+                                    </button>
+                                    <button type="button" class="editor-btn" data-action="image">
+                                        <i class="fas fa-image"></i>
+                                    </button>
+                                    <button type="button" class="editor-btn" data-action="code">
+                                        <i class="fas fa-code"></i>
+                                    </button>
+                                    <div class="toolbar-divider"></div>
+                                    <button type="button" class="editor-btn" id="uploadImageBtn" title="上传图片">
+                                        <i class="fas fa-upload"></i>
+                                        <span class="btn-text">图片</span>
+                                    </button>
+                                    <button type="button" class="editor-btn" id="uploadVideoBtn" title="上传视频">
+                                        <i class="fas fa-video"></i>
+                                        <span class="btn-text">视频</span>
+                                    </button>
+                                    <div class="toolbar-divider"></div>
+                                    <button type="button" class="editor-btn" data-action="preview" id="previewBtn">
+                                        <i class="fas fa-eye"></i>
+                                        预览
+                                    </button>
+                                </div>
+                                <input type="file" id="fileInput" accept="image/*,video/*" style="display: none;" multiple>
+                                <textarea id="articleContent" name="content" rows="15" placeholder="使用Markdown格式编写文章内容..."></textarea>
+                                <div class="preview-container" id="previewContainer" style="display: none;">
+                                    <div class="preview-content" id="previewContent"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="saveDraftBtn">
+                    <i class="fas fa-save"></i>
+                    保存草稿
+                </button>
+                <button type="button" class="btn btn-primary" id="publishBtn">
+                    <i class="fas fa-paper-plane"></i>
+                    发布文章
+                </button>
+                <button type="button" class="btn btn-light" id="cancelBtn">
+                    取消
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认模态框 -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h3 class="modal-title">确认删除</h3>
+                <button class="modal-close" id="deleteModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>确定要删除选中的文章吗？此操作不可撤销。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                    <i class="fas fa-trash"></i>
+                    确认删除
+                </button>
+                <button type="button" class="btn btn-light" id="cancelDeleteBtn">
+                    取消
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 文件上传进度模态框 -->
+    <div class="modal" id="uploadModal">
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h3 class="modal-title">文件上传</h3>
+                <button class="modal-close" id="uploadModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="upload-progress">
+                    <div class="progress-info">
+                        <span id="uploadFileName">正在上传...</span>
+                        <span id="uploadProgress">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="upload-stats">
+                        <span id="uploadStatus">准备上传...</span>
+                    </div>
+                </div>
+                <div id="uploadResults" style="display: none;">
+                    <h4>上传结果</h4>
+                    <div id="uploadedFiles"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" id="closeUploadBtn" style="display: none;">
+                    关闭
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/articles.js"></script>
+</body>
+</html>

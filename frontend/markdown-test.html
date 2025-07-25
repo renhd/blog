@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown 测试页面</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Markdown 渲染测试</h1>
+        <div id="test-content"></div>
+        
+        <h2>加载状态</h2>
+        <div id="status"></div>
+        
+        <button onclick="testMarkdown()">测试 Markdown 渲染</button>
+    </div>
+
+    <script>
+        // 测试Markdown内容
+        const testMarkdownContent = `# 测试标题
+
+这是一个**粗体文本**和*斜体文本*的测试。
+
+## 代码块测试
+
+\`\`\`javascript
+function hello() {
+    console.log("Hello, World!");
+    return "success";
+}
+\`\`\`
+
+## 表格测试
+
+| 功能 | 状态 | 版本 | 描述 |
+|------|------|------|------|
+| **用户认证** | ✅ 完成 | v1.0 | 支持JWT登录验证 |
+| **文章管理** | ✅ 完成 | v1.0 | 增删改查功能完整 |
+| **分类管理** | ✅ 完成 | v1.0 | 支持多级分类 |
+| **权限控制** | 🚧 开发中 | v1.1 | 细粒度权限管理 |
+| **主题定制** | 📋 计划中 | v2.0 | 可视化主题编辑 |
+
+## 复杂表格测试
+
+| API接口 | 方法 | 路径 | 参数 | 响应示例 |
+|---------|------|------|------|----------|
+| 获取文章列表 | \`GET\` | \`/blog-posts\` | \`current\`, \`size\` | \`{"code": 200, "data": {...}}\` |
+| 创建文章 | \`POST\` | \`/blog-posts\` | \`title\`, \`content\` | \`{"code": 200, "message": "创建成功"}\` |
+| 更新文章 | \`PUT\` | \`/blog-posts/{id}\` | \`id\`, \`title\`, \`content\` | \`{"code": 200, "message": "更新成功"}\` |
+| 删除文章 | \`DELETE\` | \`/blog-posts/{id}\` | \`id\` | \`{"code": 200, "message": "删除成功"}\` |
+
+## 列表测试
+
+- 项目1
+- 项目2
+- 项目3
+
+## 链接测试
+
+[这是一个链接](https://example.com)
+
+## 行内代码
+
+这是一个\`inline code\`示例。`;
+
+        function updateStatus() {
+            const status = document.getElementById('status');
+            const markedStatus = typeof marked !== 'undefined' ? '✅ 已加载' : '❌ 未加载';
+            const hljsStatus = typeof hljs !== 'undefined' ? '✅ 已加载' : '❌ 未加载';
+            
+            status.innerHTML = `
+                <p>Marked.js: ${markedStatus}</p>
+                <p>Highlight.js: ${hljsStatus}</p>
+                <p>Marked版本: ${typeof marked !== 'undefined' && marked.version ? marked.version : '未知'}</p>
+            `;
+        }
+
+        function testMarkdown() {
+            const content = document.getElementById('test-content');
+            
+            try {
+                let html;
+                if (typeof marked !== 'undefined' && marked.parse) {
+                    html = marked.parse(testMarkdownContent);
+                } else if (typeof marked !== 'undefined' && marked) {
+                    html = marked(testMarkdownContent);
+                } else {
+                    html = '<p style="color: red;">Marked.js 未正确加载</p>';
+                }
+                
+                content.innerHTML = html;
+                
+                // 为表格添加响应式容器
+                const tables = content.querySelectorAll('table');
+                tables.forEach(table => {
+                    if (!table.parentElement.classList.contains('table-container')) {
+                        const container = document.createElement('div');
+                        container.className = 'table-container';
+                        container.style.cssText = 'overflow-x: auto; margin: 1.5rem 0; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);';
+                        table.parentNode.insertBefore(container, table);
+                        container.appendChild(table);
+                    }
+                });
+                
+                // 应用代码高亮
+                if (typeof hljs !== 'undefined') {
+                    hljs.highlightAll();
+                }
+                
+                console.log('Markdown 渲染成功');
+            } catch (error) {
+                console.error('Markdown 渲染失败:', error);
+                content.innerHTML = `<p style="color: red;">渲染失败: ${error.message}</p>`;
+            }
+        }
+
+        // 页面加载完成后检查状态
+        document.addEventListener('DOMContentLoaded', function() {
+            // 等待外部库加载
+            setTimeout(function() {
+                updateStatus();
+                // 自动测试
+                testMarkdown();
+            }, 1000);
+        });
+
+        // 定期更新状态
+        setInterval(updateStatus, 1000);
+    </script>
+</body>
+</html>

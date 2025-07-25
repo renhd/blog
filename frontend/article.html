@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章详情 - 小冬瓜の田园笔记</title>
+    <link rel="icon" href="./icon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/all.min.css">
+    <script src="./js/marked.min.js"></script>
+    <script src="./js/highlight.min.js"></script>
+    <link rel="stylesheet" href="./css/github.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script src="./js/api.js"></script>
+    <style>
+        .article-header {
+            background: var(--card-bg);
+            color: var(--text-color);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .article-header h1 {
+            margin: 0 0 1rem 0;
+            font-size: 2.5rem;
+            line-height: 1.2;
+        }
+
+        .article-meta {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .article-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .article-content {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .article-content h1,
+        .article-content h2,
+        .article-content h3,
+        .article-content h4,
+        .article-content h5,
+        .article-content h6 {
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+
+        .article-content h1 {
+            font-size: 2rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .article-content h2 {
+            font-size: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.3rem;
+        }
+
+        .article-content h3 {
+            font-size: 1.3rem;
+        }
+
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+            box-shadow: var(--shadow);
+        }
+
+        .article-content video {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--border-radius);
+            margin: 1rem 0;
+        }
+
+        .article-content blockquote {
+            border-left: 4px solid var(--primary-color);
+            margin: 1rem 0;
+            padding-left: 1rem;
+            background: var(--surface-bg);
+            padding: 1rem 1rem 1rem 2rem;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+
+        .article-content code {
+            background: var(--surface-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+        }
+
+        .article-content pre {
+            background: var(--surface-bg);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        .article-content pre code {
+            background: transparent;
+            padding: 0;
+        }
+
+        .article-navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .nav-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            color: var(--text-color);
+            transition: var(--transition);
+            max-width: 45%;
+        }
+
+        .nav-button:hover {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .nav-button.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .back-to-list {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            margin-bottom: 2rem;
+        }
+
+        .back-to-list:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+
+        .loading i {
+            font-size: 2rem;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        .error {
+            text-align: center;
+            padding: 3rem;
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .error h2 {
+            color: var(--error-color);
+            margin-bottom: 1rem;
+        }
+
+        .error p {
+            color: var(--text-muted);
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .article-header h1 {
+                font-size: 2rem;
+            }
+
+            .article-meta {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .article-content {
+                padding: 1.5rem;
+            }
+
+            .article-navigation {
+                flex-direction: column;
+            }
+
+            .nav-button {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="home-layout">
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-title">
+                <img src="logo.jpg" width="40px" height="40px"/>
+                小冬瓜の田园笔记
+            </h1>
+            <div class="nav-links">
+                <a href="index.html">
+                    <i class="fas fa-home"></i>
+                    首页
+                </a>
+                <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>
+                    <i class="fas fa-clock"></i>
+                    最新文章
+                </h3>
+                <ul id="recent-posts"></ul>
+            </div>
+            <div class="sidebar-section">
+                <h3>
+                    <i class="fas fa-tags"></i>
+                    文章分类
+                </h3>
+                <ul id="categories"></ul>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <a href="index.html" class="back-to-list">
+                <i class="fas fa-arrow-left"></i>
+                返回文章列表
+            </a>
+
+            <div id="loading" class="loading">
+                <i class="fas fa-spinner"></i>
+                <p>正在加载文章...</p>
+            </div>
+
+            <div id="error" class="error" style="display: none;">
+                <h2>
+                    <i class="fas fa-exclamation-triangle"></i>
+                    文章未找到
+                </h2>
+                <p>抱歉，您要查看的文章不存在或已被删除。</p>
+                <a href="index.html" class="back-to-list">
+                    <i class="fas fa-arrow-left"></i>
+                    返回首页
+                </a>
+            </div>
+
+            <article id="article" style="display: none;">
+                <header class="article-header">
+                    <h1 id="article-title"></h1>
+                    <div class="article-meta">
+                        <span>
+                            <i class="fas fa-calendar-alt"></i>
+                            <span id="article-date"></span>
+                        </span>
+                        <span id="article-category-container" style="display: none;">
+                            <i class="fas fa-folder"></i>
+                            <span id="article-category"></span>
+                        </span>
+                        <span>
+                            <i class="fas fa-eye"></i>
+                            <span id="article-views"></span> 次阅读
+                        </span>
+                    </div>
+                </header>
+
+                <div id="article-summary" class="article-summary" style="display: none;">
+                    <div class="card">
+                        <h3>
+                            <i class="fas fa-file-text"></i>
+                            文章摘要
+                        </h3>
+                        <p id="article-summary-content"></p>
+                    </div>
+                </div>
+
+                <div class="article-content" id="article-content">
+                    <!-- 文章内容将在这里渲染 -->
+                </div>
+
+                <div class="article-navigation" id="article-navigation" style="display: none;">
+                    <a href="#" class="nav-button" id="prev-article" style="display: none;">
+                        <i class="fas fa-chevron-left"></i>
+                        <div>
+                            <div style="font-size: 0.8rem; opacity: 0.7;">上一篇</div>
+                            <div id="prev-title"></div>
+                        </div>
+                    </a>
+                    <a href="#" class="nav-button" id="next-article" style="display: none;">
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.8rem; opacity: 0.7;">下一篇</div>
+                            <div id="next-title"></div>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+            </article>
+        </main>
+    </div>
+
+    <!-- 回到顶部按钮 -->
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <script>
+        // 全局变量
+        let currentArticleId = null;
+        let allArticles = [];
+        
+        // 页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取URL参数中的文章ID
+            const urlParams = new URLSearchParams(window.location.search);
+            currentArticleId = urlParams.get('id');
+            
+            if (!currentArticleId) {
+                showError();
+                return;
+            }
+            
+            // 初始化页面
+            initializePage();
+        });
+        
+        // 初始化页面
+        async function initializePage() {
+            try {
+                // 加载文章内容
+                await loadArticle();
+                
+                // 加载侧边栏内容
+                await loadSidebarContent();
+                
+                // 初始化主题
+                initializeTheme();
+                
+                // 初始化回到顶部按钮
+                initializeBackToTop();
+                
+                // 初始化代码高亮
+                if (typeof hljs !== 'undefined') {
+                    hljs.highlightAll();
+                }
+                
+                // 初始化Mermaid图表
+                if (typeof mermaid !== 'undefined') {
+                    mermaid.initialize({ theme: 'default' });
+                    mermaid.run();
+                }
+            } catch (error) {
+                console.error('页面初始化失败:', error);
+                showError();
+            }
+        }
+        
+        // 加载文章内容
+        async function loadArticle() {
+            try {
+                const result = await api.get(`/blog-posts/${currentArticleId}`);
+                
+                if (result.code === 200 && result.data) {
+                    const article = result.data;
+                    
+                    // 显示文章内容
+                    displayArticle(article);
+                    
+                    // 更新浏览量（可选，如果后端支持）
+                    updateViewCount(currentArticleId);
+                    
+                    // 隐藏加载状态
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('article').style.display = 'block';
+                } else {
+                    showError();
+                }
+            } catch (error) {
+                console.error('加载文章失败:', error);
+                showError();
+            }
+        }
+        
+        // 显示文章内容
+        function displayArticle(article) {
+            // 设置页面标题
+            document.title = `${article.title} - 小冬瓜の田园笔记`;
+            
+            // 填充文章信息
+            document.getElementById('article-title').textContent = article.title;
+            document.getElementById('article-date').textContent = formatDate(article.createTime);
+            document.getElementById('article-views').textContent = article.viewCount || 0;
+            
+            // 显示分类（如果有）
+            if (article.category) {
+                document.getElementById('article-category').textContent = article.category;
+                document.getElementById('article-category-container').style.display = 'flex';
+            }
+            
+            // 显示摘要（如果有）
+            if (article.summary) {
+                document.getElementById('article-summary-content').textContent = article.summary;
+                document.getElementById('article-summary').style.display = 'block';
+            }
+            
+            // 渲染文章内容
+            const contentElement = document.getElementById('article-content');
+            if (typeof marked !== 'undefined') {
+                contentElement.innerHTML = marked.parse(article.content);
+            } else {
+                contentElement.innerHTML = article.content.replace(/\n/g, '<br>');
+            }
+            
+            // 加载相邻文章导航
+            loadArticleNavigation();
+        }
+        
+        // 加载文章导航
+        async function loadArticleNavigation() {
+            try {
+                // 获取所有已发布的文章
+                const result = await api.get('/blog-posts/published');
+                
+                if (result.code === 200 && result.data) {
+                    allArticles = result.data.records || result.data;
+                    
+                    // 找到当前文章的索引
+                    const currentIndex = allArticles.findIndex(article => 
+                        article.id == currentArticleId
+                    );
+                    
+                    if (currentIndex !== -1) {
+                        const prevArticle = allArticles[currentIndex + 1]; // 下一个索引是上一篇
+                        const nextArticle = allArticles[currentIndex - 1]; // 上一个索引是下一篇
+                        
+                        // 显示导航
+                        if (prevArticle || nextArticle) {
+                            document.getElementById('article-navigation').style.display = 'flex';
+                            
+                            if (prevArticle) {
+                                const prevLink = document.getElementById('prev-article');
+                                prevLink.href = `article.html?id=${prevArticle.id}`;
+                                document.getElementById('prev-title').textContent = prevArticle.title;
+                                prevLink.style.display = 'flex';
+                            }
+                            
+                            if (nextArticle) {
+                                const nextLink = document.getElementById('next-article');
+                                nextLink.href = `article.html?id=${nextArticle.id}`;
+                                document.getElementById('next-title').textContent = nextArticle.title;
+                                nextLink.style.display = 'flex';
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('加载文章导航失败:', error);
+            }
+        }
+        
+        // 更新浏览量
+        async function updateViewCount(articleId) {
+            try {
+                // 这里可以调用API来增加浏览量
+                // await api.put(`/blog-posts/${articleId}/view`);
+            } catch (error) {
+                console.error('更新浏览量失败:', error);
+            }
+        }
+        
+        // 加载侧边栏内容
+        async function loadSidebarContent() {
+            await Promise.all([
+                loadRecentPosts(),
+                loadCategories()
+            ]);
+        }
+        
+        // 加载最新文章
+        async function loadRecentPosts() {
+            try {
+                const result = await api.get('/blog-posts/published?size=5');
+                
+                if (result.code === 200 && result.data) {
+                    const posts = result.data.records || result.data;
+                    const recentPostsList = document.getElementById('recent-posts');
+                    
+                    recentPostsList.innerHTML = posts.map(post => `
+                        <li>
+                            <a href="article.html?id=${post.id}" class="${post.id == currentArticleId ? 'current' : ''}">
+                                ${post.title}
+                            </a>
+                        </li>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('加载最新文章失败:', error);
+            }
+        }
+        
+        // 加载分类
+        async function loadCategories() {
+            try {
+                const result = await api.get('/categories');
+                
+                if (result.code === 200 && result.data) {
+                    const categories = result.data.records || result.data;
+                    const categoriesList = document.getElementById('categories');
+                    
+                    categoriesList.innerHTML = categories.map(category => `
+                        <li>
+                            <a href="index.html?category=${encodeURIComponent(category.name)}">
+                                ${category.name}
+                            </a>
+                        </li>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('加载分类失败:', error);
+            }
+        }
+        
+        // 显示错误
+        function showError() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+        }
+        
+        // 主题切换功能
+        function toggleTheme() {
+            const body = document.body;
+            const themeToggle = document.querySelector('.theme-toggle i');
+            
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            if (newTheme === 'dark') {
+                themeToggle.className = 'fas fa-sun';
+            } else {
+                themeToggle.className = 'fas fa-moon';
+            }
+        }
+        
+        // 初始化主题
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const themeToggle = document.querySelector('.theme-toggle i');
+            
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            if (savedTheme === 'dark') {
+                themeToggle.className = 'fas fa-sun';
+            } else {
+                themeToggle.className = 'fas fa-moon';
+            }
+        }
+        
+        // 回到顶部功能
+        function initializeBackToTop() {
+            const backToTopBtn = document.getElementById('backToTop');
+            
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    backToTopBtn.classList.add('show');
+                } else {
+                    backToTopBtn.classList.remove('show');
+                }
+            });
+        }
+        
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        
+        // 工具函数
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+    </script>
+</body>
+</html>

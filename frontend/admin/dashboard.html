@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>博客管理平台 - 仪表板</title>
+    <link rel="icon" href="../icon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- 侧边栏 -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-blog"></i>
+                    <span class="logo-text">博客管理</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+
+            <div class="sidebar-menu">
+                <ul class="menu-list">
+                    <li class="menu-item active">
+                        <a href="dashboard.html">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span class="menu-text">仪表板</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="articles.html">
+                            <i class="fas fa-file-alt"></i>
+                            <span class="menu-text">文章管理</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="categories.html">
+                            <i class="fas fa-folder"></i>
+                            <span class="menu-text">分类管理</span>
+                        </a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="settings.html">
+                            <i class="fas fa-cog"></i>
+                            <span class="menu-text">系统设置</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 顶部导航栏 -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="mobile-toggle" id="mobileToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="page-title">仪表板</h1>
+                </div>
+                
+                <div class="header-right">
+                    <div class="user-menu">
+                        <div class="user-info" id="userInfo">
+                            <img src="../logo.png" alt="用户头像" class="user-avatar">
+                            <span class="user-name">管理员</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="dropdown-menu" id="userDropdown">
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-user"></i>
+                                个人信息
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-cog"></i>
+                                设置
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item" id="logoutBtn">
+                                <i class="fas fa-sign-out-alt"></i>
+                                退出登录
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 页面内容 -->
+            <main class="content">
+                <!-- 统计卡片 -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="totalPosts">0</h3>
+                            <p class="stat-label">文章总数</p>
+                        </div>
+                        <div class="stat-trend">
+                            <span class="trend-value positive">+12%</span>
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="totalViews">0</h3>
+                            <p class="stat-label">总浏览量</p>
+                        </div>
+                        <div class="stat-trend">
+                            <span class="trend-value positive">+8%</span>
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-folder"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="totalCategories">0</h3>
+                            <p class="stat-label">分类数量</p>
+                        </div>
+                        <div class="stat-trend">
+                            <span class="trend-value neutral">0%</span>
+                            <i class="fas fa-minus"></i>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-day"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number" id="todayViews">0</h3>
+                            <p class="stat-label">今日浏览</p>
+                        </div>
+                        <div class="stat-trend">
+                            <span class="trend-value positive">+25%</span>
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图表和列表区域 -->
+                <div class="dashboard-grid">
+                    <!-- 最近文章 -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-clock"></i>
+                                最近文章
+                            </h3>
+                            <a href="articles.html" class="card-action">查看全部</a>
+                        </div>
+                        <div class="card-content">
+                            <div class="recent-posts" id="recentPosts">
+                                <div class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <span>加载中...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 分类统计 -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-chart-pie"></i>
+                                分类统计
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="category-stats" id="categoryStats">
+                                <div class="loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <span>加载中...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 系统信息 -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-info-circle"></i>
+                                系统信息
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="system-info">
+                                <div class="info-item">
+                                    <label>系统版本</label>
+                                    <value>Blog System v1.0</value>
+                                </div>
+                                <div class="info-item">
+                                    <label>运行时间</label>
+                                    <value id="uptime">计算中...</value>
+                                </div>
+                                <div class="info-item">
+                                    <label>数据库</label>
+                                    <value>MySQL 8.0</value>
+                                </div>
+                                <div class="info-item">
+                                    <label>最后登录</label>
+                                    <value id="lastLogin">-</value>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 快速操作 -->
+                    <div class="dashboard-card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-bolt"></i>
+                                快速操作
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="quick-actions">
+                                <a href="articles.html?action=new" class="action-btn primary">
+                                    <i class="fas fa-plus"></i>
+                                    新建文章
+                                </a>
+                                <a href="categories.html?action=new" class="action-btn secondary">
+                                    <i class="fas fa-folder-plus"></i>
+                                    添加分类
+                                </a>
+                                <a href="../index.html" class="action-btn outline" target="_blank">
+                                    <i class="fas fa-external-link-alt"></i>
+                                    查看网站
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- 加载遮罩 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>加载中...</p>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
