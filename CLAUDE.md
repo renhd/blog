@@ -18,25 +18,53 @@
 - **原生技术**: HTML5 + CSS3 + JavaScript
 - **UI组件**: Font Awesome 图标
 - **编辑器**: Markdown 编辑器
+- **Markdown解析**: Marked.js
+- **代码高亮**: Highlight.js
 - **设计**: 响应式设计，支持深色/浅色主题
 
 ## 项目结构
 
 ```
-/Users/renhd/work/gitcode/blog/
 ├── backend/                     # 后端 Spring Boot 项目
 │   ├── src/main/java/com/example/blog/
 │   │   ├── controller/          # 控制器层
+│   │   │   ├── AdminController.java
+│   │   │   ├── AdminDashboardController.java
+│   │   │   ├── BlogPostController.java
+│   │   │   ├── CategoryController.java
+│   │   │   └── FileUploadController.java
 │   │   ├── service/             # 服务层
+│   │   │   ├── impl/            # 服务实现
+│   │   │   ├── AdminService.java
+│   │   │   ├── BlogPostService.java
+│   │   │   ├── CategoryService.java
+│   │   │   └── FileStorageService.java
 │   │   ├── entity/              # 实体类
+│   │   │   ├── Admin.java
+│   │   │   ├── BlogPost.java
+│   │   │   ├── Category.java
+│   │   │   └── FileEntity.java
 │   │   ├── mapper/              # 数据访问层
+│   │   │   ├── AdminMapper.java
+│   │   │   ├── BlogPostMapper.java
+│   │   │   ├── CategoryMapper.java
+│   │   │   └── FileMapper.java
 │   │   ├── config/              # 配置类
+│   │   │   ├── WebConfig.java
+│   │   │   └── MyBatisPlusMetaObjectHandler.java
 │   │   ├── util/                # 工具类
-│   │   └── interceptor/         # 拦截器
+│   │   │   └── JwtUtils.java
+│   │   ├── interceptor/         # 拦截器
+│   │   │   └── AuthInterceptor.java
+│   │   ├── common/              # 通用类
+│   │   │   └── Result.java
+│   │   └── BlogApplication.java # 启动类
 │   ├── src/main/resources/
 │   │   ├── application.yml      # 应用配置
 │   │   ├── mapper/              # MyBatis XML 映射
+│   │   │   └── BlogPostMapper.xml
 │   │   └── sql/init.sql         # 数据库初始化脚本
+│   ├── src/test/java/           # 测试代码
 │   └── pom.xml                  # Maven 配置
 ├── frontend/                    # 前端项目
 │   ├── admin/                   # 后台管理前端
@@ -59,11 +87,24 @@
 │   │       ├── categories.js    # 分类管理逻辑
 │   │       └── settings.js      # 设置页逻辑
 │   ├── index.html               # 前台首页
-│   ├── styles.css               # 前台样式
-│   ├── blog.js                  # 前台逻辑
-│   ├── api.js                   # API 接口封装
-│   └── test.html                # 测试页面
+│   ├── article.html             # 文章详情页
+│   ├── css/                     # 前台样式目录
+│   │   ├── styles.css           # 主样式文件
+│   │   ├── all.min.css          # Font Awesome 样式
+│   │   └── github.min.css       # 代码高亮样式
+│   ├── js/                      # 前台脚本目录
+│   │   ├── blog.js              # 前台逻辑
+│   │   ├── api.js               # API 接口封装
+│   │   ├── marked.min.js        # Markdown 解析器
+│   │   └── highlight.min.js     # 代码高亮
+│   ├── webfonts/                # 字体文件
+│   ├── logo.png                 # 网站Logo
+│   ├── icon.ico                 # 网站图标
+│   ├── test.html                # 测试页面
+│   ├── markdown-test.html       # Markdown 测试页面
+│   └── README.md                # 前端说明文档
 ├── test_api.sh                  # API 测试脚本
+├── mermaid_test.html            # Mermaid 图表测试页面
 ├── API_README.md                # API 文档
 └── CLAUDE.md                    # 项目文档
 ```
@@ -73,17 +114,19 @@
 ### 前台功能
 1. **文章展示**: 分页显示已发布文章
 2. **分类浏览**: 按分类筛选文章
-3. **文章详情**: 支持 Markdown 渲染
+3. **文章详情**: 支持 Markdown 渲染和代码高亮
 4. **响应式设计**: 适配各种设备屏幕
 5. **主题切换**: 深色/浅色主题
 6. **回到顶部**: 智能显示滚动按钮
+7. **搜索功能**: 支持文章标题和内容搜索
 
 ### 后台管理功能
 1. **用户认证**: JWT 登录验证
 2. **仪表板**: 数据统计和图表展示
 3. **文章管理**: CRUD 操作，Markdown 编辑器
 4. **分类管理**: 分类的增删改查
-5. **系统设置**: 个人信息、安全设置、系统维护
+5. **文件上传**: 支持图片和文档上传
+6. **系统设置**: 个人信息、安全设置、系统维护
 
 ## API 接口
 
@@ -113,6 +156,11 @@
 - `GET /admin/dashboard/stats` - 获取统计数据
 - `GET /admin/dashboard/recent-posts` - 获取最近文章
 - `GET /admin/dashboard/system-info` - 获取系统信息
+
+### 文件上传接口 (`/files`)
+- `POST /files/upload` - 上传文件
+- `GET /files/{filename}` - 获取文件
+- `DELETE /files/{id}` - 删除文件
 
 ## 数据库设计
 
@@ -149,6 +197,16 @@
    - last_login_time (最后登录时间)
    - create_time (创建时间)
    - update_time (更新时间)
+
+4. **file_entity** - 文件表
+   - id (主键)
+   - original_filename (原始文件名)
+   - stored_filename (存储文件名)
+   - file_path (文件路径)
+   - file_size (文件大小)
+   - content_type (文件类型)
+   - create_time (上传时间)
+   - is_deleted (逻辑删除)
 
 ## 安全配置
 
@@ -229,6 +287,14 @@ jwt:
 - 恢复: `mysql -u用户名 -p密码 blog_db < backup.sql`
 
 ## 更新日志
+
+### v1.1.0 (2025-07-25)
+- ✅ 添加文件上传功能
+- ✅ 实现文章详情页
+- ✅ 集成代码高亮功能
+- ✅ 优化前端项目结构
+- ✅ 添加 Mermaid 图表支持
+- ✅ 完善 API 文档
 
 ### v1.0.0 (2024-12-15)
 - ✅ 完成后端 API 开发
