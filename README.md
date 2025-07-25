@@ -2,7 +2,7 @@
 
 一个基于 Spring Boot + MyBatis Plus + MySQL 的完整博客管理系统，包含前台展示和后台管理功能。
 
-成品展示： [博客](https://xgourd.cn)
+成品展示： [博客](https://www.xgourd.cn)
 
 ## 技术栈
 
