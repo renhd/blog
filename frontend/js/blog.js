@@ -5,6 +5,30 @@ let categories = [];
 let currentView = 'home';
 let currentPost = null;
 
+// 移动端菜单控制
+function toggleMobileMenu() {
+    const navLinks = document.getElementById('nav-links');
+    const toggleBtn = document.querySelector('.mobile-menu-toggle i');
+    
+    navLinks.classList.toggle('active');
+    
+    // 切换图标
+    if (navLinks.classList.contains('active')) {
+        toggleBtn.className = 'fas fa-times';
+    } else {
+        toggleBtn.className = 'fas fa-bars';
+    }
+}
+
+// 关闭移动端菜单（点击链接后）
+function closeMobileMenu() {
+    const navLinks = document.getElementById('nav-links');
+    const toggleBtn = document.querySelector('.mobile-menu-toggle i');
+    
+    navLinks.classList.remove('active');
+    toggleBtn.className = 'fas fa-bars';
+}
+
 // 主题管理
 function initTheme() {
     const savedTheme = localStorage.getItem('theme') || 'light';
@@ -28,6 +52,11 @@ function toggleTheme() {
     setTimeout(() => {
         document.body.style.transition = '';
     }, 300);
+    
+    // 移动端关闭菜单
+    if (window.innerWidth <= 768) {
+        closeMobileMenu();
+    }
 }
 
 function updateThemeIcon(theme) {
@@ -550,6 +579,9 @@ async function showHome() {
     document.getElementById('post-list').style.display = 'none';
     document.getElementById('post-content').style.display = 'none';
     
+    // 关闭移动端菜单
+    closeMobileMenu();
+    
     // 隐藏回到顶部按钮
     hideScrollButton();
     
@@ -590,6 +622,9 @@ function showAllPosts() {
     document.getElementById('home-content').style.display = 'none';
     document.getElementById('post-list').style.display = 'block';
     document.getElementById('post-content').style.display = 'none';
+    
+    // 关闭移动端菜单
+    closeMobileMenu();
     
     // 隐藏回到顶部按钮
     hideScrollButton();
