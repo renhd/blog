@@ -61,84 +61,98 @@
             gap: 0.5rem;
         }
 
-        .article-content {
-            background: var(--card-bg);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
+        /* 回到顶部按钮样式 */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-button);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all var(--transition);
+            z-index: 1000;
+        }
+
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .back-to-top:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        @media (max-width: 768px) {
+            .back-to-top {
+                width: 45px;
+                height: 45px;
+                bottom: 1.5rem;
+                right: 1.5rem;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* 移除重复的样式定义，使用CSS变量 */
+        .article-header {
+            background: var(--surface-color);
+            color: var(--text-color);
             padding: 2rem;
             margin-bottom: 2rem;
-            line-height: 1.8;
-        }
-
-        .article-content h1,
-        .article-content h2,
-        .article-content h3,
-        .article-content h4,
-        .article-content h5,
-        .article-content h6 {
-            margin-top: 2rem;
-            margin-bottom: 1rem;
-            color: var(--text-color);
-        }
-
-        .article-content h1 {
-            font-size: 2rem;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 0.5rem;
-        }
-
-        .article-content h2 {
-            font-size: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.3rem;
-        }
-
-        .article-content h3 {
-            font-size: 1.3rem;
-        }
-
-        .article-content img {
-            max-width: 100%;
-            height: auto;
-            border-radius: var(--border-radius);
-            margin: 1rem 0;
+            border-radius: var(--radius-lg);
             box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
         }
 
-        .article-content video {
-            max-width: 100%;
-            height: auto;
-            border-radius: var(--border-radius);
-            margin: 1rem 0;
+        .article-header h1 {
+            margin: 0 0 1rem 0;
+            font-size: 2.5rem;
+            line-height: 1.2;
         }
 
-        .article-content blockquote {
-            border-left: 4px solid var(--primary-color);
-            margin: 1rem 0;
-            padding-left: 1rem;
-            background: var(--surface-bg);
-            padding: 1rem 1rem 1rem 2rem;
-            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        .article-meta {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        @media (max-width: 480px) {
+            .article-header {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .article-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .article-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+                font-size: 0.8rem;
+            }
         }
 
-        .article-content code {
-            background: var(--surface-bg);
-            padding: 0.2rem 0.4rem;
-            border-radius: 4px;
-            font-family: 'Consolas', 'Monaco', monospace;
-        }
-
-        .article-content pre {
-            background: var(--surface-bg);
-            padding: 1rem;
-            border-radius: var(--border-radius);
-            overflow-x: auto;
-            margin: 1rem 0;
-        }
-
-        .article-content pre code {
-            background: transparent;
-            padding: 0;
+        .article-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .article-navigation {
@@ -338,7 +352,7 @@
                     </div>
                 </div>
 
-                <div class="article-content" id="article-content">
+                <div class="post-body" id="article-content">
                     <!-- 文章内容将在这里渲染 -->
                 </div>
 
@@ -412,6 +426,13 @@
                     mermaid.initialize({ theme: 'default' });
                     mermaid.run();
                 }
+                
+                // 渲染Mermaid图表
+                try {
+                    await renderMermaidCharts(document.getElementById('article-content'));
+                } catch (error) {
+                    console.warn('Mermaid图表渲染失败:', error);
+                }
             } catch (error) {
                 console.error('页面初始化失败:', error);
                 showError();
@@ -449,7 +470,7 @@
             // 设置页面标题
             document.title = `${article.title} - 小冬瓜の田园笔记`;
             
-            // 填充文章信息
+            // 填充文章信息 - 使用与index.html相同的结构
             document.getElementById('article-title').textContent = article.title;
             document.getElementById('article-date').textContent = formatDate(article.createTime);
             document.getElementById('article-views').textContent = article.viewCount || 0;
@@ -466,13 +487,60 @@
                 document.getElementById('article-summary').style.display = 'block';
             }
             
-            // 渲染文章内容
+            // 渲染文章内容 - 在post-body容器中添加标题和元信息
             const contentElement = document.getElementById('article-content');
-            if (typeof marked !== 'undefined') {
-                contentElement.innerHTML = marked.parse(article.content);
-            } else {
-                contentElement.innerHTML = article.content.replace(/\n/g, '<br>');
+            let markdownContent;
+            
+            try {
+                if (typeof marked !== 'undefined') {
+                    markdownContent = marked.parse(article.content);
+                } else {
+                    markdownContent = article.content.replace(/\n/g, '<br>');
+                }
+            } catch (error) {
+                console.warn('Markdown渲染失败，使用原始内容:', error);
+                markdownContent = article.content.replace(/\n/g, '<br>');
             }
+            
+            // 使用与index.html相同的结构
+            const displayDate = article.createTime || article.date || '未知日期';
+            const categoryInfo = article.category ? ` · ${article.category}` : '';
+            
+            contentElement.innerHTML = `
+                <h1>${article.title}</h1>
+                <p class="post-meta">
+                    <span class="meta-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        ${formatDate(displayDate)}
+                    </span>
+                    ${article.category ? `
+                    <span class="meta-item">
+                        <i class="fas fa-folder"></i>
+                        ${article.category}
+                    </span>
+                    ` : ''}
+                    <span class="meta-item">
+                        <i class="fas fa-eye"></i>
+                        ${article.viewCount || 0} 次阅读
+                    </span>
+                </p>
+                ${markdownContent}
+            `;
+            
+            // 为表格添加响应式容器
+            const tables = contentElement.querySelectorAll('table');
+            tables.forEach(table => {
+                if (!table.parentElement.classList.contains('table-container')) {
+                    const container = document.createElement('div');
+                    container.className = 'table-container';
+                    table.parentNode.insertBefore(container, table);
+                    container.appendChild(table);
+                }
+            });
+            
+            // 隐藏header中的重复信息，因为我们在post-body中显示了
+            document.querySelector('.article-header').style.display = 'none';
+            document.querySelector('.article-summary').style.display = 'none';
             
             // 加载相邻文章导航
             loadArticleNavigation();
@@ -639,6 +707,81 @@
                 top: 0,
                 behavior: 'smooth'
             });
+        }
+        
+        // Mermaid图表渲染
+        async function renderMermaidCharts(container) {
+            if (typeof mermaid === 'undefined') {
+                console.warn('Mermaid库未加载');
+                return;
+            }
+            
+            try {
+                // 查找所有mermaid代码块
+                const mermaidBlocks = container.querySelectorAll('pre code.language-mermaid, pre code[class*="mermaid"]');
+                
+                for (let i = 0; i < mermaidBlocks.length; i++) {
+                    const block = mermaidBlocks[i];
+                    const mermaidCode = block.textContent.trim();
+                    
+                    if (mermaidCode) {
+                        try {
+                            // 创建图表容器
+                            const chartContainer = document.createElement('div');
+                            chartContainer.className = 'mermaid-chart';
+                            chartContainer.id = `mermaid-chart-${Date.now()}-${i}`;
+                            
+                            // 替换原始代码块
+                            const preElement = block.closest('pre');
+                            if (preElement) {
+                                preElement.parentNode.replaceChild(chartContainer, preElement);
+                                
+                                // 渲染图表
+                                const { svg } = await mermaid.render(chartContainer.id + '-svg', mermaidCode);
+                                chartContainer.innerHTML = svg;
+                            }
+                        } catch (error) {
+                            console.error('Mermaid图表渲染失败:', error);
+                            // 如果渲染失败，显示错误信息
+                            const errorContainer = document.createElement('div');
+                            errorContainer.className = 'mermaid-chart';
+                            errorContainer.innerHTML = `
+                                <div class="mermaid-error">
+                                    <strong>图表渲染失败</strong>
+                                    <small>请检查图表语法是否正确</small>
+                                </div>
+                            `;
+                            const preElement = block.closest('pre');
+                            if (preElement) {
+                                preElement.parentNode.replaceChild(errorContainer, preElement);
+                            }
+                        }
+                    }
+                }
+                
+                // 更新Mermaid主题
+                updateMermaidTheme();
+            } catch (error) {
+                console.error('Mermaid图表处理失败:', error);
+            }
+        }
+        
+        // 更新Mermaid主题
+        function updateMermaidTheme() {
+            if (typeof mermaid === 'undefined') return;
+            
+            const theme = document.documentElement.getAttribute('data-theme') || 'light';
+            const mermaidTheme = theme === 'dark' ? 'dark' : 'default';
+            
+            try {
+                mermaid.initialize({ 
+                    theme: mermaidTheme,
+                    startOnLoad: false,
+                    securityLevel: 'loose'
+                });
+            } catch (error) {
+                console.warn('Mermaid主题更新失败:', error);
+            }
         }
         
         // 工具函数
